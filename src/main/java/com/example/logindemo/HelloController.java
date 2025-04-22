@@ -28,6 +28,10 @@ public class HelloController {
     @FXML private TextField regEmailField;
     @FXML private PasswordField regPasswordField;
 
+    public void initialize(){
+        DBManager.createUserTable();
+    }
+
     @FXML
     protected void handleLoginButton() {
         String user = usernameField.getText();
@@ -48,7 +52,12 @@ public class HelloController {
         String user = regUsernameField.getText();
         String email = regEmailField.getText();
         String pass = regPasswordField.getText();
+        String salt = "";
         System.out.println("Registering: " + user + " / " + email + " / " + pass);
+
+
+        User newUser = new User(email,salt,pass);
+        DBManager.addUser(newUser);
     }
 
     @FXML
