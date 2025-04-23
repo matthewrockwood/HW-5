@@ -14,13 +14,8 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class HelloController {
-    @FXML
-    private Label welcomeText;
+    @FXML private Label welcomeText;
 
-    @FXML
-    protected void onHelloButtonClick() {
-        welcomeText.setText("Welcome to JavaFX Application!");
-    }
     @FXML private TextField usernameField;
     @FXML private PasswordField passwordField;
 
@@ -36,7 +31,9 @@ public class HelloController {
     protected void handleLoginButton() {
         String user = usernameField.getText();
         String pass = passwordField.getText();
-        System.out.println("Login attempt: " + user + " / " + pass);
+
+        boolean success = PasswordManager.authenticate(user, pass);
+        System.out.println(success ? "Login successful!" : "Login failed!");
     }
 
     @FXML
@@ -49,15 +46,16 @@ public class HelloController {
 
     @FXML
     protected void handleRegisterButton() {
-        String user = regUsernameField.getText();
         String email = regEmailField.getText();
         String pass = regPasswordField.getText();
-        String salt = "";
-        System.out.println("Registering: " + user + " / " + email + " / " + pass);
+        byte[] saltBytes = PasswordManager.generateSalt();
+        String salt = PasswordManager.byteArrayToString(saltBytes);
+        String hash = PasswordManager.generatePasswordHash(pass, saltBytes);
 
-
-        User newUser = new User(email,salt,pass);
+        User newUser = new User(email, salt, hash);
         DBManager.addUser(newUser);
+
+        System.out.println("User registered: " + email);
     }
 
     @FXML
@@ -67,5 +65,4 @@ public class HelloController {
         stage.setScene(new Scene(root));
         stage.show();
     }
-
 }

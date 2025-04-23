@@ -72,6 +72,41 @@ public class DBManager {
         }
     }
 
+    public static String retrievePassword(String email) {
+        String password = "";
+        String query = "SELECT * FROM users WHERE email = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, email);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    password = rs.getString("password");
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return password;
+    }
+
+    public static String retrieveSalt(String email) {
+        String salt = "";
+        String query = "SELECT * FROM users WHERE email = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, email);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    salt = rs.getString("salt");
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return salt;
+    }
+
+
     public static void addUser(User newUser) {
         String query = "INSERT INTO users (email,salt,password) VALUES (?,?,?)";
         try(Connection conn = getConnection();
