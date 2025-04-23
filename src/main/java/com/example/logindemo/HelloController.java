@@ -16,7 +16,7 @@ import java.io.IOException;
 public class HelloController {
     @FXML private Label welcomeText;
 
-    @FXML private TextField usernameField;
+    @FXML private TextField loginEmailField; // changed from usernameField
     @FXML private PasswordField passwordField;
 
     @FXML private TextField regUsernameField;
@@ -29,10 +29,12 @@ public class HelloController {
 
     @FXML
     protected void handleLoginButton() {
-        String user = usernameField.getText();
+        String email = loginEmailField.getText(); // fixed
         String pass = passwordField.getText();
 
-        boolean success = PasswordManager.authenticate(user, pass);
+        boolean success = PasswordManager.authenticate(email, pass);
+
+
         System.out.println(success ? "Login successful!" : "Login failed!");
     }
 
@@ -52,8 +54,13 @@ public class HelloController {
         String salt = PasswordManager.byteArrayToString(saltBytes);
         String hash = PasswordManager.generatePasswordHash(pass, saltBytes);
 
-        User newUser = new User(email, salt, hash);
+        User newUser = new User(email, hash, salt);
+
         DBManager.addUser(newUser);
+
+        System.out.println("🧂 Salt (New): " + salt);
+        System.out.println("🔑 Hash (New): " + hash);
+
 
         System.out.println("User registered: " + email);
     }
